@@ -1,5 +1,6 @@
 #include "commands.h"
 
+#include "Arduino.h"
 #include "HardwareSerial.h"
 HardwareSerial serial;
 
@@ -14,6 +15,8 @@ int _incomingByte = 0;
 */
 int _selectedMemory = 0;
 
+int _pinout_buzzer = 13;
+
 void _fail() {
     serial.write(COMMAND_PRG_FAIL);
 }
@@ -24,6 +27,9 @@ void _ok() {
 
 void setup() {
     serial.begin(9600);
+
+    pinMode();
+
     serial.println("~ Programmer ready");
 }
 
@@ -32,11 +38,25 @@ void loop() {
         _incomingByte = serial.read();
 
         switch(_incomingByte) {
+            case COMMAND_SET_FLASH:
+                serial.println("~ Select memory: Flash");
+                _selectedMemory = 1;
+
+                _ok();
+                break;
+
+            case COMMAND_SET_EEPROM:
+                serial.println("~ Select memory: EEPROM");
+                _selectedMemory = 2;
+
+                _ok();
+                break;
+
             default:
                 serial.println("~ Unknown command");
                 _fail();
 
-                return;
+                break;
         }
     }
 }
